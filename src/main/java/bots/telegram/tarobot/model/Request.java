@@ -6,28 +6,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
-@Table(name = "users")
+@Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private Long telegramId;
+    private String request;
 
-    @Column(nullable = false)
-    private String username;
+    private String response;
 
-    private String about;
-
-    @OneToMany(mappedBy = "id",
-            fetch = FetchType.LAZY)
-    private List<Request> requests;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 }
