@@ -14,7 +14,7 @@ public class BotCommandFactory {
     public BotCommand getBotCommand(String command, Message message) {
         switch (command) {
             case "/start": return startCommand;
-
+            default: return null;
         }
     }
 }

@@ -28,21 +28,6 @@ public class StartCommand extends BotCommand<SendMessage> {
         return SendMessage.builder()
                 .chatId(message.getChatId())
                 .text(BotMessage.START)
-                .replyMarkup(makeReplyKeyboard())
-                .build();
-    }
-
-    private ReplyKeyboardMarkup makeReplyKeyboard() {
-        return ReplyKeyboardMarkup.builder()
-                .keyboard(List.of(
-                        new KeyboardRow(List.of(
-                                keyboardService.makeKeyboardButton(ButtonText.TAROT_READING),
-                                keyboardService.makeKeyboardButton(ButtonText.INFO)
-                        )),
-                        new KeyboardRow(List.of(
-                                keyboardService.makeKeyboardButton(ButtonText.CHANGE_DATA)
-                        ))
-                ))
                 .build();
     }
 }

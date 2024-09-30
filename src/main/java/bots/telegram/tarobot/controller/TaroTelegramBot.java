@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 @Component
 @RequiredArgsConstructor
 public class TaroTelegramBot extends TelegramLongPollingBot {
+    UserController userController;
     BotCommandFactory botCommandFactory;
 
     @Override
@@ -25,9 +26,16 @@ public class TaroTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        BotCommand command = botCommandFactory.getBotCommand(update.getMessage().getText(), update.getMessage());
-        Stream<PartialBotApiMethod> response = command.getResponse(update.getMessage());
-        response.forEach(this::sendResponse);
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            BotCommand command = botCommandFactory.getBotCommand(update.getMessage().getText(), update.getMessage());
+            if (command != null) {
+                Stream<PartialBotApiMethod> response = command.getResponse(update.getMessage());
+                response.forEach(this::sendResponse);
+            } else if (userController.isAboutRequired(update.getMessage().getFrom().getId())) {
+                userController.addAboutDataFromMessage(update.getMessage());
+            }
+
+        }
     }
 
     private void sendResponse(PartialBotApiMethod message) {
