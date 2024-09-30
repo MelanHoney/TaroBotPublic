@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends CrudRepository<User, Long> {
     boolean existsByTelegramId(Long telegramId);
     User getByTelegramId(Long telegramId);
-    void updateByTelegramId(Long telegramId);
+    User findByTelegramId(Long telegramId);
 }
