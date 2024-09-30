@@ -5,7 +5,11 @@ import bots.telegram.tarobot.model.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
+
+/** !!!!!!!!!!!!!!!!!
+// TODO Это ваще пока не трогать, тут полный калик
+// !!!!!!!!!!!!!!!!! */
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,6 @@ public class TextDataDistributionService {
             }
         }
 
-        return new SendMessage();
+        return SendMessage.builder().text(message.getText()).build();
     }
 }
