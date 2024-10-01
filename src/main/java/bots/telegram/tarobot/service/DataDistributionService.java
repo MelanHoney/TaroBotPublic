@@ -20,6 +20,7 @@ public class DataDistributionService {
     private final RequestRepository requestRepository;
     private final MessageExecutorService messageExecutorService;
     private final KeyboardService keyboardService;
+    private final CardLayoutService cardLayoutService;
 
     public void distribute(Message message) {
         var user = userRepository.findByTelegramId(message.getFrom().getId());
@@ -33,7 +34,7 @@ public class DataDistributionService {
                 if (lastRequest != null && lastRequest.getRequest() == null) {
                     lastRequest.setRequest(message.getText());
                     requestRepository.save(lastRequest);
-                    startCardLayoutProcess();
+                    cardLayoutService.beginLayout(message);
                 }
             }
         } else {
@@ -62,10 +63,6 @@ public class DataDistributionService {
                         ))
                 ))
                 .build();
-    }
-
-    private void startCardLayoutProcess() {
-
     }
 
     private void sendWrongRequestMessage(Long chatId) {
