@@ -11,8 +11,8 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 @Component
 @RequiredArgsConstructor
 public class CardLayoutCommand extends TaroBotCommand {
-    MessageExecutorService messageExecutorService;
-    UserRepository userRepository;
+    private final MessageExecutorService messageExecutorService;
+    private final UserRepository userRepository;
 
     @Override
     public void process(Message message) {

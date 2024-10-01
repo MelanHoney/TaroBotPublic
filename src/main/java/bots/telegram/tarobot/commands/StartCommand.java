@@ -12,16 +12,16 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 @Component
 @RequiredArgsConstructor
 public class StartCommand extends TaroBotCommand {
-    UserRepository userRepository;
-    MessageExecutorService messageExecutorService;
+    private final UserRepository userRepository;
+    private final MessageExecutorService messageExecutorService;
 
     @Override
     public void process(Message message) {
-        if (userRepository.existsByTelegramId(message.getFrom().getId())) {
+        if (!userRepository.existsByTelegramId(message.getFrom().getId())) {
             registerUser(message.getFrom());
-            sendSuccessRegistrationMessage(message.getChatId());
+            sendSuccessRegistrationMessage(message.getFrom().getId());
         } else {
-            sendAlreadyRegisteredMessage(message.getChatId());
+            sendAlreadyRegisteredMessage(message.getFrom().getId());
         }
     }
 

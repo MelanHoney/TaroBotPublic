@@ -16,10 +16,10 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DataDistributionService {
-    UserRepository userRepository;
-    RequestRepository requestRepository;
-    MessageExecutorService messageExecutorService;
-    KeyboardService keyboardService;
+    private final UserRepository userRepository;
+    private final RequestRepository requestRepository;
+    private final MessageExecutorService messageExecutorService;
+    private final KeyboardService keyboardService;
 
     public void distribute(Message message) {
         var user = userRepository.findByTelegramId(message.getFrom().getId());
@@ -27,7 +27,7 @@ public class DataDistributionService {
             if (user.getAbout() == null) {
                 user.setAbout(message.getText());
                 userRepository.save(user);
-                sendSuccessRegistrationMessage(message.getChatId());
+                sendSuccessRegistrationMessage(message.getFrom().getId());
             } else {
                 var lastRequest = requestRepository.findTop1ByUserOrderByTimestampDesc(user);
                 if (lastRequest != null && lastRequest.getRequest() == null) {
@@ -44,6 +44,7 @@ public class DataDistributionService {
     private void sendSuccessRegistrationMessage(Long chatId) {
         SendMessage message = SendMessage.builder()
                 .text(BotMessage.SUCCESS_REGISTRATION)
+                .chatId(chatId)
                 .replyMarkup(makeSuccessRegistrationReplyKeyboard())
                 .build();
         messageExecutorService.execute(message);
