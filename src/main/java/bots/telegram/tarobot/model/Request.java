@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 @Data
@@ -20,6 +22,8 @@ public class Request {
     private String request;
 
     private String response;
+
+    private LocalDateTime timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
