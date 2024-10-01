@@ -32,7 +32,7 @@ public class TaroTelegramBot implements SpringLongPollingBot, LongPollingSingleT
         if (update.hasMessage() && update.getMessage().hasText()) {
             TaroBotCommand command = botCommandFactory.getBotCommand(update.getMessage().getText(), update.getMessage());
             if (command != null) {
-                command.processCommand(update.getMessage());
+                command.process(update.getMessage());
             }
         }
     }

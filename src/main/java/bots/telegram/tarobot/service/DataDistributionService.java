@@ -13,11 +13,11 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 @Service
 @RequiredArgsConstructor
-public class TextDataDistributionService {
+public class DataDistributionService {
     UserRepository userRepository;
     RequestRepository requestRepository;
 
-    public SendMessage processMessage(Message message) {
+    public void distribute(Message message) {
         var user = userRepository.findByTelegramId(message.getFrom().getId());
         if (user != null) {
             if (user.getAbout() == null) {
@@ -26,8 +26,9 @@ public class TextDataDistributionService {
             } else {
 
             }
+        } else {
+
         }
 
-        return SendMessage.builder().text(message.getText()).build();
     }
 }

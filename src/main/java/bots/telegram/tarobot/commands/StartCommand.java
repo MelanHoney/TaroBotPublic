@@ -16,9 +16,8 @@ public class StartCommand extends TaroBotCommand {
     MessageExecutorService messageExecutorService;
 
     @Override
-    public void processCommand(Message message) {
-        var user = userRepository.findByTelegramId(message.getFrom().getId());
-        if (user == null) {
+    public void process(Message message) {
+        if (userRepository.existsByTelegramId(message.getFrom().getId())) {
             registerUser(message.getFrom());
             sendSuccessRegistrationMessage(message.getChatId());
         } else {
