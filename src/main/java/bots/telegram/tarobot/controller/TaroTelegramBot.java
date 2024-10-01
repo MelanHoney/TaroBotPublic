@@ -2,6 +2,7 @@ package bots.telegram.tarobot.controller;
 
 import bots.telegram.tarobot.commands.TaroBotCommand;
 import bots.telegram.tarobot.factory.BotCommandFactory;
+import bots.telegram.tarobot.service.DataDistributionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,8 +15,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 @RequiredArgsConstructor
 public class TaroTelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
-    UserController userController;
     BotCommandFactory botCommandFactory;
+    DataDistributionService dataDistributionService;
 
     @Override
     public String getBotToken() {
@@ -33,6 +34,8 @@ public class TaroTelegramBot implements SpringLongPollingBot, LongPollingSingleT
             TaroBotCommand command = botCommandFactory.getBotCommand(update.getMessage().getText(), update.getMessage());
             if (command != null) {
                 command.process(update.getMessage());
+            } else {
+                dataDistributionService.distribute(update.getMessage());
             }
         }
     }
