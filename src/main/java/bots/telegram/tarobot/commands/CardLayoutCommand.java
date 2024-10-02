@@ -1,6 +1,7 @@
 package bots.telegram.tarobot.commands;
 
 import bots.telegram.tarobot.model.Request;
+import bots.telegram.tarobot.service.KeyboardService;
 import bots.telegram.tarobot.service.MessageExecutorService;
 import bots.telegram.tarobot.service.RequestService;
 import bots.telegram.tarobot.service.UserService;
@@ -9,10 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
 @Component
 @RequiredArgsConstructor
 public class CardLayoutCommand extends TaroBotCommand {
+    private final KeyboardService keyboardService;
     private final MessageExecutorService messageExecutorService;
     private final UserService userService;
     private final RequestService requestService;
@@ -32,6 +36,7 @@ public class CardLayoutCommand extends TaroBotCommand {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text(BotMessage.ASK_CONTEXT)
+                .replyMarkup(new ReplyKeyboardRemove(true))
                 .build();
         messageExecutorService.execute(message);
     }

@@ -29,6 +29,7 @@ public class CardLayoutService {
     private final RequestService requestService;
     private final MessageExecutorService messageExecutorService;
     private final GeminiService geminiService;
+    private final KeyboardService keyboardService;
 
     public void beginLayout(Message message) {
         HashMap<Integer, TarotCard> randomThreeCards = TarotCardsUtil.getRandomThreeCards();
@@ -132,6 +133,7 @@ public class CardLayoutService {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text(response)
+                .replyMarkup(keyboardService.getReplyKeyboardMarkup())
                 .build();
         messageExecutorService.execute(message);
     }
