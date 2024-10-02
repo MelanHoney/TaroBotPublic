@@ -16,6 +16,7 @@ public class CardLayoutService {
     private final UserService userService;
     private final RequestService requestService;
     private final MessageExecutorService messageExecutorService;
+    private final GeminiService geminiService;
 
     public void beginLayout(Message message) {
         HashMap<Integer, TarotCard> cards = TarotCardsUtil.getRandomThreeCards();

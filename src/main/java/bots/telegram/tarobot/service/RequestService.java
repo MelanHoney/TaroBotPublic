@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class RequestService {
-    RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
 
     public Request findTop1ByUserOrderByTimestampDesc(User user) {
         return requestRepository.findTop1ByUserOrderByTimestampDesc(user);

@@ -1,7 +1,10 @@
 package bots.telegram.tarobot.util.enums;
 
+import lombok.Getter;
+
 import java.io.File;
 
+@Getter
 public enum TarotCard {
     THE_FOOL("Шут", new File("src/main/media/TarotCard1.jpg")),
     THE_MAGICIAN("Маг", new File("src/main/media/TarotCard2.jpg")),
@@ -82,6 +85,11 @@ public enum TarotCard {
     QUEEN_OF_CUPS("Королева кубков", new File("src/main/media/TarotCard77.jpg")),
     KING_OF_CUPS("Король кубков", new File("src/main/media/TarotCard78.jpg"));
 
+    private String name;
+    private File image;
+
     TarotCard(String name, File image) {
+        this.name = name;
+        this.image = image;
     }
 }

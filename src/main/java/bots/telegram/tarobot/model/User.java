@@ -28,6 +28,6 @@ public class User {
     private String about;
 
     @OneToMany(mappedBy = "id",
-            fetch = FetchType.LAZY)
+            fetch = FetchType.EAGER)
     private List<Request> requests;
 }
