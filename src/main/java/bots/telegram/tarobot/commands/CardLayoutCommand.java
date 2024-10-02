@@ -2,6 +2,7 @@ package bots.telegram.tarobot.commands;
 
 import bots.telegram.tarobot.model.UserRepository;
 import bots.telegram.tarobot.service.MessageExecutorService;
+import bots.telegram.tarobot.service.UserService;
 import bots.telegram.tarobot.util.enums.BotMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,11 +13,11 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 @RequiredArgsConstructor
 public class CardLayoutCommand extends TaroBotCommand {
     private final MessageExecutorService messageExecutorService;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
     public void process(Message message) {
-        var user = userRepository.findByTelegramId(message.getFrom().getId());
+        var user = userService.findByTelegramId(message.getFrom().getId());
         if (user != null && user.getAbout() != null) {
             askUserToWriteContext(message.getChatId());
         } else {

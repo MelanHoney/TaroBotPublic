@@ -16,24 +16,24 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DataDistributionService {
-    private final UserRepository userRepository;
-    private final RequestRepository requestRepository;
+    private final UserService userService;
+    private final RequestService requestService;
     private final MessageExecutorService messageExecutorService;
     private final KeyboardService keyboardService;
     private final CardLayoutService cardLayoutService;
 
     public void distribute(Message message) {
-        var user = userRepository.findByTelegramId(message.getFrom().getId());
+        var user = userService.findByTelegramId(message.getFrom().getId());
         if (user != null) {
             if (user.getAbout() == null) {
                 user.setAbout(message.getText());
-                userRepository.save(user);
+                userService.save(user);
                 sendSuccessRegistrationMessage(message.getFrom().getId());
             } else {
-                var lastRequest = requestRepository.findTop1ByUserOrderByTimestampDesc(user);
+                var lastRequest = requestService.findTop1ByUserOrderByTimestampDesc(user);
                 if (lastRequest != null && lastRequest.getRequest() == null) {
                     lastRequest.setRequest(message.getText());
-                    requestRepository.save(lastRequest);
+                    requestService.save(lastRequest);
                     cardLayoutService.beginLayout(message);
                 }
             }

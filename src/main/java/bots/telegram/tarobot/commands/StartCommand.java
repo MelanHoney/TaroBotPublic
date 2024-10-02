@@ -3,6 +3,7 @@ package bots.telegram.tarobot.commands;
 import bots.telegram.tarobot.model.User;
 import bots.telegram.tarobot.model.UserRepository;
 import bots.telegram.tarobot.service.MessageExecutorService;
+import bots.telegram.tarobot.service.UserService;
 import bots.telegram.tarobot.util.enums.BotMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,12 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 @Component
 @RequiredArgsConstructor
 public class StartCommand extends TaroBotCommand {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final MessageExecutorService messageExecutorService;
 
     @Override
     public void process(Message message) {
-        if (!userRepository.existsByTelegramId(message.getFrom().getId())) {
+        if (!userService.existsByTelegramId(message.getFrom().getId())) {
             registerUser(message.getFrom());
             sendSuccessRegistrationMessage(message.getFrom().getId());
         } else {
@@ -31,7 +32,7 @@ public class StartCommand extends TaroBotCommand {
                 .telegramId(telegramUser.getId())
                 .username(telegramUser.getUserName())
                 .build();
-        userRepository.save(user);
+        userService.save(user);
     }
 
     private void sendSuccessRegistrationMessage(Long chatId) {
