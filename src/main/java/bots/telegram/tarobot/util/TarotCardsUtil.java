@@ -2,8 +2,6 @@ package bots.telegram.tarobot.util;
 
 import bots.telegram.tarobot.util.enums.TarotCard;
 import lombok.Getter;
-import lombok.experimental.UtilityClass;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Random;

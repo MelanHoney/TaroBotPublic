@@ -2,9 +2,9 @@ package bots.telegram.tarobot.service;
 
 import bots.telegram.tarobot.util.enums.TarotCard;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-
 
 import java.util.ArrayList;
 import java.util.HashMap;

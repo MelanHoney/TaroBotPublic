@@ -1,7 +1,6 @@
 package bots.telegram.tarobot.commands;
 
 import bots.telegram.tarobot.model.User;
-import bots.telegram.tarobot.model.UserRepository;
 import bots.telegram.tarobot.service.MessageExecutorService;
 import bots.telegram.tarobot.service.UserService;
 import bots.telegram.tarobot.util.enums.BotMessage;

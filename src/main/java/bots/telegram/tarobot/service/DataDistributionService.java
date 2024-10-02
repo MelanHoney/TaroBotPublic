@@ -1,7 +1,5 @@
 package bots.telegram.tarobot.service;
 
-import bots.telegram.tarobot.model.RequestRepository;
-import bots.telegram.tarobot.model.UserRepository;
 import bots.telegram.tarobot.util.enums.BotMessage;
 import bots.telegram.tarobot.util.enums.ButtonText;
 import lombok.RequiredArgsConstructor;
