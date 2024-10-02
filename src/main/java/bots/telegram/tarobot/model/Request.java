@@ -19,8 +19,10 @@ public class Request {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 10000)
     private String request;
 
+    @Column(length = 10000)
     private String response;
 
     private LocalDateTime timestamp;
