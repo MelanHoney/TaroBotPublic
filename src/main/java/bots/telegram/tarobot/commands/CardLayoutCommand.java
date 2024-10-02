@@ -19,6 +19,7 @@ public class CardLayoutCommand extends TaroBotCommand {
     public void process(Message message) {
         var user = userService.findByTelegramId(message.getFrom().getId());
         if (user != null && user.getAbout() != null) {
+
             askUserToWriteContext(message.getChatId());
         } else {
             askUserToRegister(message.getChatId());
