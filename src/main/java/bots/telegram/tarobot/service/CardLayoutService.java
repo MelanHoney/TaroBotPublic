@@ -12,12 +12,10 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
 import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +33,7 @@ public class CardLayoutService {
     public void beginLayout(Message message) {
         HashMap<Integer, TarotCard> randomThreeCards = TarotCardsUtil.getRandomThreeCards();
         sendPreparingMessages(message.getChatId(), randomThreeCards);
-        sendResponseToUser(message.getChatId(), getGeminiResponse(message, randomThreeCards));
+        sendResponseToUser(message.getChatId(), generateGeminiResponse(message, randomThreeCards));
     }
 
     @Async
@@ -80,7 +78,7 @@ public class CardLayoutService {
 
     private void deleteMessagesAfterDelay(Long chatId, List<Message> sentMessages) {
         try {
-            TimeUnit.SECONDS.sleep(3);
+            TimeUnit.SECONDS.sleep(5);
 
             for (Message sentMessage : sentMessages) {
                 DeleteMessage deleteMessage = DeleteMessage.builder()
@@ -102,7 +100,7 @@ public class CardLayoutService {
         messageExecutorService.execute(message);
     }
 
-    private Collection<? extends InputMedia> makeMediaCollection(HashMap<Integer, TarotCard> randomThreeCards) {
+    private List<InputMediaPhoto> makeMediaCollection(HashMap<Integer, TarotCard> randomThreeCards) {
         List<InputMediaPhoto> imageList = new ArrayList<>();
         for (TarotCard card : randomThreeCards.values()) {
             imageList.add(InputMediaPhoto.builder()
@@ -112,7 +110,7 @@ public class CardLayoutService {
         return imageList;
     }
 
-    private String getGeminiResponse(Message message, HashMap<Integer, TarotCard> randomThreeCards) {
+    private String generateGeminiResponse(Message message, HashMap<Integer, TarotCard> randomThreeCards) {
         String mergedData = mergeUserAboutAndRequest(message);
         String response = geminiService.getResponse(randomThreeCards, mergedData);
         saveResponse(message.getFrom().getId(), response);

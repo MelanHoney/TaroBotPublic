@@ -44,23 +44,9 @@ public class DataDistributionService {
         SendMessage message = SendMessage.builder()
                 .text(BotMessage.SUCCESS_REGISTRATION)
                 .chatId(chatId)
-                .replyMarkup(makeSuccessRegistrationReplyKeyboard())
+                .replyMarkup(keyboardService.getReplyKeyboardMarkup())
                 .build();
         messageExecutorService.execute(message);
-    }
-
-    private ReplyKeyboardMarkup makeSuccessRegistrationReplyKeyboard() {
-        return ReplyKeyboardMarkup.builder()
-                .keyboard(List.of(
-                        new KeyboardRow(List.of(
-                                keyboardService.makeKeyboardButton(ButtonText.TAROT_READING),
-                                keyboardService.makeKeyboardButton(ButtonText.INFO)
-                        )),
-                        new KeyboardRow(List.of(
-                                keyboardService.makeKeyboardButton(ButtonText.CHANGE_DATA)
-                        ))
-                ))
-                .build();
     }
 
     private void sendWrongRequestMessage(Long chatId) {
