@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.meta.api.methods.invoices.CreateInvoiceLink;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -45,8 +46,17 @@ public class MessageExecutorService {
         try {
             return telegramClient.execute(deleteMessage);
         } catch (TelegramApiException e) {
-            log.error("Error sending media group. Error: " + e.getMessage());
+            log.error("Error deleting message. Error: " + e.getMessage());
         }
         return false;
+    }
+
+    public String execute(CreateInvoiceLink invoiceLink) {
+        try {
+            return telegramClient.execute(invoiceLink);
+        } catch (TelegramApiException e) {
+            log.error("Error making payment link. Error: " + e.getMessage());
+        }
+        return null;
     }
 }

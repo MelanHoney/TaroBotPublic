@@ -3,7 +3,10 @@ package bots.telegram.tarobot.service;
 import bots.telegram.tarobot.util.enums.ButtonText;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
@@ -27,9 +30,22 @@ public class KeyboardService {
                 .build();
     }
 
+    public InlineKeyboardMarkup getInlineKeyboardMarkup(String url) {
+        return InlineKeyboardMarkup.builder()
+                .keyboardRow(new InlineKeyboardRow(makeInlineKeyboardButton(url)))
+                .build();
+    }
+
     private KeyboardButton makeKeyboardButton(String text) {
         return KeyboardButton.builder()
                 .text(text)
+                .build();
+    }
+
+    private InlineKeyboardButton makeInlineKeyboardButton(String url) {
+        return InlineKeyboardButton.builder()
+                .text("Оплатить расклад")
+                .url(url)
                 .build();
     }
 }
