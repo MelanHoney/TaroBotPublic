@@ -26,7 +26,7 @@ public class CardLayoutCommand extends TaroBotCommand {
         var user = userService.findByTelegramId(message.getFrom().getId());
         if (user != null && user.getAbout() != null) {
             var lastRequest = requestService.findTop1ByUserOrderByTimestampDesc(user);
-            if (lastRequest != null && lastRequest.getResponse().equals("error")) {
+            if (lastRequest != null && lastRequest.getResponse() != null && lastRequest.getResponse().equals("error")) {
                 askUserToWriteContext(message.getChatId());
             } else {
                 requestService.save(Request.builder().user(user).build());

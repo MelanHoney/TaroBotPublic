@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.meta.api.methods.AnswerPreCheckoutQuery;
 import org.telegram.telegrambots.meta.api.methods.invoices.CreateInvoiceLink;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -58,5 +59,13 @@ public class MessageExecutorService {
             log.error("Error making payment link. Error: " + e.getMessage());
         }
         return null;
+    }
+
+    public void execute(AnswerPreCheckoutQuery answerPreCheckoutQuery) {
+        try {
+            telegramClient.execute(answerPreCheckoutQuery);
+        } catch (TelegramApiException e) {
+            log.error("Error answering PreCheckoutQuery. Error: " + e.getMessage());
+        }
     }
 }

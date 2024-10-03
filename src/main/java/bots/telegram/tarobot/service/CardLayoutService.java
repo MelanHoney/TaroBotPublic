@@ -5,7 +5,6 @@ import bots.telegram.tarobot.util.enums.BotMessage;
 import bots.telegram.tarobot.util.enums.TarotCard;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -43,9 +42,17 @@ public class CardLayoutService {
 
     @Async
     protected CompletableFuture<List<Message>> sendPreparingMessages(Long chatId, HashMap<Integer, TarotCard> randomThreeCards) {
-        sendBeforeCardsMessage(chatId);
-        sendCardImagesWithDelay(chatId, randomThreeCards);
-        return CompletableFuture.completedFuture(sendMessagesToThenDelete(chatId));
+        try {
+            sendBeforeCardsMessage(chatId);
+            sendCardImagesWithDelay(chatId, randomThreeCards);
+
+            TimeUnit.SECONDS.sleep(4);
+
+            return CompletableFuture.completedFuture(sendMessagesToThenDelete(chatId));
+        } catch (InterruptedException e) {
+            log.error("Error sending message: " + e.getMessage());
+            return null;
+        }
     }
 
     private void sendBeforeCardsMessage(Long chatId) {
@@ -123,7 +130,8 @@ public class CardLayoutService {
     }
 
     private String mergeUserAboutAndRequest(Message message) {
-        return userService.getByTelegramId(message.getFrom().getId()).getAbout() + "\n" + message.getText();
+        var user = userService.getByTelegramId(message.getFrom().getId());
+        return user.getAbout() + "\n" + requestService.findTop1ByUserOrderByTimestampDesc(user).getRequest();
     }
 
     private void saveResponse(@NonNull Long id, String response) {

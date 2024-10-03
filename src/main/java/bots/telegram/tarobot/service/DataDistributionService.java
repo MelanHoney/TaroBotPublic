@@ -34,7 +34,7 @@ public class DataDistributionService {
                 sendSuccessRegistrationMessage(message.getFrom().getId());
             } else {
                 var lastRequest = requestService.findTop1ByUserOrderByTimestampDesc(user);
-                if (lastRequest != null &&  lastRequest.getResponse().equals("error")) {
+                if (lastRequest != null && lastRequest.getResponse() != null && lastRequest.getResponse().equals("error")) {
                     lastRequest.setRequest(message.getText());
                     requestService.save(lastRequest);
                     cardLayoutService.beginLayout(message);
@@ -42,6 +42,8 @@ public class DataDistributionService {
                     lastRequest.setRequest(message.getText());
                     requestService.save(lastRequest);
                     askUserToPay(message.getChatId());
+                } else {
+                    sendWrongRequestMessage(message.getChatId());
                 }
             }
         } else {
