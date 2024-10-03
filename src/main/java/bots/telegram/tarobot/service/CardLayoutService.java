@@ -45,10 +45,11 @@ public class CardLayoutService {
         try {
             sendBeforeCardsMessage(chatId);
             sendCardImagesWithDelay(chatId, randomThreeCards);
+            List<Message> messagesToThenDelete = sendMessagesToThenDelete(chatId);
 
             TimeUnit.SECONDS.sleep(4);
 
-            return CompletableFuture.completedFuture(sendMessagesToThenDelete(chatId));
+            return CompletableFuture.completedFuture(messagesToThenDelete);
         } catch (InterruptedException e) {
             log.error("Error sending message: " + e.getMessage());
             return null;
