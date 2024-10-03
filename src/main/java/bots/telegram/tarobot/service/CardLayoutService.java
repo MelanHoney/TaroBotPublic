@@ -116,7 +116,13 @@ public class CardLayoutService {
     private String generateGeminiResponse(Message message, HashMap<Integer, TarotCard> randomThreeCards) {
         String mergedData = mergeUserAboutAndRequest(message);
         String response = geminiService.getResponse(randomThreeCards, mergedData);
-        saveResponse(message.getFrom().getId(), response);
+
+        if(!response.equals(".Ошибка.")){
+            saveResponse(message.getFrom().getId(), response);
+        } else {
+            saveError(message.getFrom().getId());
+        }
+
         return response;
     }
 
@@ -139,6 +145,13 @@ public class CardLayoutService {
         var user = userService.getByTelegramId(id);
         var request = requestService.findTop1ByUserOrderByTimestampDesc(user);
         request.setResponse(response);
+        requestService.save(request);
+    }
+
+    private void saveError(@NonNull Long id) {
+        var user = userService.getByTelegramId(id);
+        var request = requestService.findTop1ByUserOrderByTimestampDesc(user);
+        request.setResponse("error");
         requestService.save(request);
     }
 

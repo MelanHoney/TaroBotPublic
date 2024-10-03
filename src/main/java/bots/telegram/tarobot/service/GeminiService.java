@@ -86,8 +86,6 @@ public class GeminiService {
             System.out.println("Ошибка парсинга JSON: " + e.getMessage());
         }
 
-
-
         return result;
     }
 
