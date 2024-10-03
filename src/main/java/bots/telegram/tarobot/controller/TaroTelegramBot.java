@@ -5,7 +5,6 @@ import bots.telegram.tarobot.factory.BotCommandFactory;
 import bots.telegram.tarobot.service.CardLayoutService;
 import bots.telegram.tarobot.service.DataDistributionService;
 import bots.telegram.tarobot.service.MessageExecutorService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
