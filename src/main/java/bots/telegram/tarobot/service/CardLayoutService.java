@@ -5,9 +5,9 @@ import bots.telegram.tarobot.util.enums.BotMessage;
 import bots.telegram.tarobot.util.enums.TarotCard;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -18,11 +18,11 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
-@EnableAsync
 @RequiredArgsConstructor
 public class CardLayoutService {
     private final UserService userService;
@@ -33,26 +33,44 @@ public class CardLayoutService {
 
     public void beginLayout(Message message) {
         HashMap<Integer, TarotCard> randomThreeCards = TarotCardsUtil.getRandomThreeCards();
-        sendPreparingMessages(message.getChatId(), randomThreeCards);
-        sendResponseToUser(message.getChatId(), generateGeminiResponse(message, randomThreeCards));
+        CompletableFuture<List<Message>> messagesToDelete = sendPreparingMessages(message.getChatId(), randomThreeCards);
+        String response = generateGeminiResponse(message, randomThreeCards);
+        messagesToDelete.whenComplete((l, e) -> {
+            deletePreparingMessages(l);
+        });
+        sendResponseToUser(message.getChatId(), response);
     }
 
     @Async
-    protected void sendPreparingMessages(Long chatId, HashMap<Integer, TarotCard> randomThreeCards) {
-        sendCardImages(chatId, randomThreeCards);
-        sendAutoDeleteMessages(chatId);
-        sendBeforeResultMessage(chatId);
+    protected CompletableFuture<List<Message>> sendPreparingMessages(Long chatId, HashMap<Integer, TarotCard> randomThreeCards) {
+        sendBeforeCardsMessage(chatId);
+        sendCardImagesWithDelay(chatId, randomThreeCards);
+        return CompletableFuture.completedFuture(sendMessagesToThenDelete(chatId));
     }
 
-    private void sendCardImages(Long chatId, HashMap<Integer, TarotCard> randomThreeCards) {
-        SendMediaGroup cardImages = SendMediaGroup.builder()
+    private void sendBeforeCardsMessage(Long chatId) {
+        SendMessage message = SendMessage.builder()
                 .chatId(chatId)
-                .medias(makeMediaCollection(randomThreeCards))
+                .text(BotMessage.BEFORE_CARDS)
                 .build();
-        messageExecutorService.execute(cardImages);
+        messageExecutorService.execute(message);
     }
 
-    private void sendAutoDeleteMessages(Long chatId) {
+    private void sendCardImagesWithDelay(Long chatId, HashMap<Integer, TarotCard> randomThreeCards) {
+        try {
+            TimeUnit.SECONDS.sleep(5);
+
+            SendMediaGroup cardImages = SendMediaGroup.builder()
+                    .chatId(chatId)
+                    .medias(makeMediaCollection(randomThreeCards))
+                    .build();
+            messageExecutorService.execute(cardImages);
+        } catch (InterruptedException e) {
+            log.error("Error sending message: " + e.getMessage());
+        }
+    }
+
+    private List<Message> sendMessagesToThenDelete(Long chatId) {
         List<SendMessage> messages = makeSendMessagesList(chatId);
         List<Message> sentMessages = new ArrayList<>();
 
@@ -60,7 +78,7 @@ public class CardLayoutService {
             sentMessages.add(messageExecutorService.execute(message));
         }
 
-        deleteMessagesAfterDelay(chatId, sentMessages);
+        return sentMessages;
     }
 
     private List<SendMessage> makeSendMessagesList(Long chatId) {
@@ -75,30 +93,6 @@ public class CardLayoutService {
                 .build();
 
         return List.of(crystalBall, afterCrystalBall);
-    }
-
-    private void deleteMessagesAfterDelay(Long chatId, List<Message> sentMessages) {
-        try {
-            TimeUnit.SECONDS.sleep(5);
-
-            for (Message sentMessage : sentMessages) {
-                DeleteMessage deleteMessage = DeleteMessage.builder()
-                        .chatId(chatId)
-                        .messageId(sentMessage.getMessageId())
-                        .build();
-                messageExecutorService.execute(deleteMessage);
-            }
-        } catch (InterruptedException e) {
-            log.error("Error sending message: " + e.getMessage());
-        }
-    }
-
-    private void sendBeforeResultMessage(Long chatId) {
-        SendMessage message = SendMessage.builder()
-                .chatId(chatId)
-                .text(BotMessage.BEFORE_RESPONSE)
-                .build();
-        messageExecutorService.execute(message);
     }
 
     private List<InputMediaPhoto> makeMediaCollection(HashMap<Integer, TarotCard> randomThreeCards) {
@@ -118,6 +112,16 @@ public class CardLayoutService {
         return response;
     }
 
+    private void deletePreparingMessages(List<Message> messages) {
+        for (Message message : messages) {
+            DeleteMessage deleteMessage = DeleteMessage.builder()
+                    .chatId(message.getChatId())
+                    .messageId(message.getMessageId())
+                    .build();
+            messageExecutorService.execute(deleteMessage);
+        }
+    }
+
     private String mergeUserAboutAndRequest(Message message) {
         return userService.getByTelegramId(message.getFrom().getId()).getAbout() + "\n" + message.getText();
     }
@@ -130,10 +134,19 @@ public class CardLayoutService {
     }
 
     private void sendResponseToUser(Long chatId, String response) {
+        sendBeforeResultMessage(chatId);
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text(response)
                 .replyMarkup(keyboardService.getReplyKeyboardMarkup())
+                .build();
+        messageExecutorService.execute(message);
+    }
+
+    private void sendBeforeResultMessage(Long chatId) {
+        SendMessage message = SendMessage.builder()
+                .chatId(chatId)
+                .text(BotMessage.BEFORE_RESPONSE)
                 .build();
         messageExecutorService.execute(message);
     }
