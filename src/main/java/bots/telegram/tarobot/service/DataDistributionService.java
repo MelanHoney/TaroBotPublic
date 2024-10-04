@@ -64,7 +64,7 @@ public class DataDistributionService {
     }
 
     private String makePaymentUrl() {
-        CreateInvoiceLink invoiceLink =  paymentService.makePaymentInvoiceLink("Расклад на картах Таро", "В услугу входит проведение онлайн-расклада на картах Таро. В случае возникновения ошибок при выполнении расклада со стороны бота Вы сможете заново заполнить данные и попробовать еще раз беспалтно.", BigDecimal.valueOf(99), "tarotLayout");
+        CreateInvoiceLink invoiceLink =  paymentService.makePaymentInvoiceLink("Расклад на картах Таро", "В услугу входит проведение онлайн-расклада на картах Таро. Осуществляя оплату Вы подтверждаете, что понимаете,что данная услуга носит развлекательный характер.", BigDecimal.valueOf(99), "tarotLayout");
         return messageExecutorService.execute(invoiceLink);
     }
 
