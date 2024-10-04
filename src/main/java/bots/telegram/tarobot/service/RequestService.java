@@ -18,4 +18,8 @@ public class RequestService {
     public Request save(Request lastRequest) {
         return requestRepository.save(lastRequest);
     }
+
+    public void delete(Request lastRequest) {
+        requestRepository.delete(lastRequest);
+    }
 }

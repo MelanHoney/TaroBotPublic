@@ -6,20 +6,15 @@ import bots.telegram.tarobot.util.enums.TarotCard;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -39,7 +34,13 @@ public class CardLayoutService {
         String response = generateGeminiResponse(message, randomThreeCards);
         messagesToDelete.thenAccept((messages) -> {
             deletePreparingMessages(messages);
-            sendResponseToUser(message.getChatId(), response);
+            if (response.equals(".Ошибка.")) {
+                sendErrorResponse(message.getChatId());
+            } else if (response.startsWith("Ошибка")) {
+                sendGeminiErrorResponse(message.getChatId());
+            } else {
+                sendResponse(message.getChatId(), response);
+            }
         });
     }
 
@@ -47,10 +48,12 @@ public class CardLayoutService {
         String mergedData = mergeUserAboutAndRequest(message);
         String response = geminiService.getResponse(randomThreeCards, mergedData);
 
-        if(!response.equals(".Ошибка.")){
-            saveResponse(message.getFrom().getId(), response);
+        if (response.startsWith("Ошибка")) {
+            saveGeminiErrorResponse(message.getFrom().getId());
+        } else if (response.equals(".Ошибка.")){
+            saveErrorResponse(message.getFrom().getId());
         } else {
-            saveError(message.getFrom().getId());
+            saveResponse(message.getFrom().getId(), response);
         }
 
         return response;
@@ -71,6 +74,20 @@ public class CardLayoutService {
         return user.getAbout() + "\n" + requestService.findTop1ByUserOrderByTimestampDesc(user).getRequest();
     }
 
+    private void saveGeminiErrorResponse(@NonNull Long id) {
+        var user = userService.getByTelegramId(id);
+        var request = requestService.findTop1ByUserOrderByTimestampDesc(user);
+        request.setResponse("gemini error");
+        requestService.save(request);
+    }
+
+    private void saveErrorResponse(@NonNull Long id) {
+        var user = userService.getByTelegramId(id);
+        var request = requestService.findTop1ByUserOrderByTimestampDesc(user);
+        request.setResponse("error");
+        requestService.save(request);
+    }
+
     private void saveResponse(@NonNull Long id, String response) {
         var user = userService.getByTelegramId(id);
         var request = requestService.findTop1ByUserOrderByTimestampDesc(user);
@@ -78,14 +95,27 @@ public class CardLayoutService {
         requestService.save(request);
     }
 
-    private void saveError(@NonNull Long id) {
-        var user = userService.getByTelegramId(id);
-        var request = requestService.findTop1ByUserOrderByTimestampDesc(user);
-        request.setResponse("error");
-        requestService.save(request);
+    private void sendErrorResponse(Long chatId) {
+        sendBeforeResultMessage(chatId);
+        SendMessage message = SendMessage.builder()
+                .chatId(chatId)
+                .text(BotMessage.WRONG_DATA)
+                .replyMarkup(keyboardService.getReplyKeyboardMarkup())
+                .build();
+        messageExecutorService.execute(message);
     }
 
-    private void sendResponseToUser(Long chatId, String response) {
+    private void sendGeminiErrorResponse(Long chatId) {
+        sendBeforeResultMessage(chatId);
+        SendMessage message = SendMessage.builder()
+                .chatId(chatId)
+                .text(BotMessage.GEMINI_ERROR)
+                .replyMarkup(keyboardService.getReplyKeyboardMarkup())
+                .build();
+        messageExecutorService.execute(message);
+    }
+
+    private void sendResponse(Long chatId, String response) {
         sendBeforeResultMessage(chatId);
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)

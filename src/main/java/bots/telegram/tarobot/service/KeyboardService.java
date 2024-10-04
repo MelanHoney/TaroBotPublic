@@ -30,6 +30,13 @@ public class KeyboardService {
                 .build();
     }
 
+    public ReplyKeyboardMarkup getCancelButtonKeyboard() {
+        return ReplyKeyboardMarkup.builder()
+                .keyboardRow(new KeyboardRow(List.of(makeKeyboardButton(ButtonText.CANCEL))))
+                .resizeKeyboard(true)
+                .build();
+    }
+
     public InlineKeyboardMarkup getInlineKeyboardMarkup(String url) {
         return InlineKeyboardMarkup.builder()
                 .keyboardRow(new InlineKeyboardRow(makeInlineKeyboardButton(url)))

@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.methods.invoices.CreateInvoiceLink;
 import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor

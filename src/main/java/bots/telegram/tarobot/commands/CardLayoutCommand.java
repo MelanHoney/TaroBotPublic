@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
 
 @Component
@@ -26,7 +25,9 @@ public class CardLayoutCommand extends TaroBotCommand {
         var user = userService.findByTelegramId(message.getFrom().getId());
         if (user != null && user.getAbout() != null) {
             var lastRequest = requestService.findTop1ByUserOrderByTimestampDesc(user);
-            if (lastRequest != null && lastRequest.getResponse() != null && lastRequest.getResponse().equals("error")) {
+            if (lastRequest != null
+                    && lastRequest.getResponse() != null
+                    && (lastRequest.getResponse().equals("error") || lastRequest.getResponse().equals("gemini error"))) {
                 askUserToWriteContext(message.getChatId());
             } else {
                 requestService.save(Request.builder().user(user).build());
@@ -41,7 +42,7 @@ public class CardLayoutCommand extends TaroBotCommand {
         SendMessage message = SendMessage.builder()
                 .chatId(chatId)
                 .text(BotMessage.ASK_CONTEXT)
-                .replyMarkup(new ReplyKeyboardRemove(true))
+                .replyMarkup(keyboardService.getCancelButtonKeyboard())
                 .build();
         messageExecutorService.execute(message);
     }

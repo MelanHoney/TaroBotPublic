@@ -1,19 +1,13 @@
 package bots.telegram.tarobot.service;
 
 import bots.telegram.tarobot.util.enums.BotMessage;
-import bots.telegram.tarobot.util.enums.ButtonText;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.invoices.CreateInvoiceLink;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
-import org.telegram.telegrambots.meta.api.objects.payments.LabeledPrice;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

@@ -13,6 +13,7 @@ public class BotCommandFactory {
     private final CardLayoutCommand cardLayoutCommand;
     private final AboutLayoutCommand aboutLayoutCommand;
     private final EditAboutCommand editAboutCommand;
+    private final CancelCommand cancelCommand;
 
     public TaroBotCommand getBotCommand(String command, Message message) {
         return switch (command) {
@@ -20,6 +21,7 @@ public class BotCommandFactory {
             case ButtonText.TAROT_READING -> cardLayoutCommand;
             case ButtonText.INFO -> aboutLayoutCommand;
             case ButtonText.CHANGE_DATA -> editAboutCommand;
+            case ButtonText.CANCEL -> cancelCommand;
             default -> null;
         };
     }
